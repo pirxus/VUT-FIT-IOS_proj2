@@ -15,19 +15,26 @@
 #include <string.h>
 
 /**
- * @brief
+ * @brief This structure represents the program parameters
+ *
+ * @var P
+ * @var H
+ * @var S
+ * @var R
+ * @var W
+ * @var C
  */
-struct process_parameters {
-    int process_count;
-    int hacker_time;
-    int serf_time;
-    int run_time;
-    int w;
-    int capacity;
-};
+typedef struct process_parameters {
+    int P;
+    int H;
+    int S;
+    int R;
+    int W;
+    int C;
+} params_t;
 
 /**
- * @brief
+ * @brief Parses program arguments and stores their values
  */
 int parse_arguments(struct process_parameters *parameters, int argc, char **argv);
 
