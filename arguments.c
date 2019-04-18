@@ -4,7 +4,7 @@
  *	@date	5.4.2019
  *	@brief  A module containing all the needed functions for parsing
  *	the command line arguments.
- *	@note	
+ *	@note   IOS 2019 - second assignment - River Crossing Problem
  */
 
 #include "arguments.h"

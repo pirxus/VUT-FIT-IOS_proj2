@@ -4,7 +4,7 @@
  *	@date	5.4.2019
  *	@brief  A header file for a module that takes care of parsing
  *	the arguments of the program.
- *	@note	
+ *	@note	IOS 2019 - second assignment - River Crossing Problem
  */
 
 #ifndef ARGUMENTS_HEADER
