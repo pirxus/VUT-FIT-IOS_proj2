@@ -10,10 +10,6 @@
 #ifndef ARGUMENTS_HEADER
 #define ARGUMENTS_HEADER
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 /**
  * @brief This structure represents the program parameters
  *

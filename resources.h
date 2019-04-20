@@ -12,10 +12,14 @@
 #include <semaphore.h>
 #include <stdio.h>
 
-#define semMutex "/ios-xsedla1h-mutex"
-#define semBarrier "/ios-xsedla1h-barrier"
-#define semHackerQ "/ios-xsedla1h-hackerQ"
-#define semSerfQ "/ios-xsedla1h-serfQ"
+#define semMUTEX "/ios-xsedla1h-mutex"
+#define semBARRIER "/ios-xsedla1h-barrier"
+#define semHACKER "/ios-xsedla1h-hacker"
+#define semSERF "/ios-xsedla1h-serf"
+#define semLOG_WRITE "/ios-xsedla1h-log_write"
+#define semCOUNTER "/ios-xsedla1h-counter"
+
+#define LOG_FILE "proj2.out"
 
 sem_t *mutex;
 sem_t *barrier;
@@ -23,15 +27,18 @@ sem_t *hacker_queue;
 sem_t *serf_queue;
 sem_t *dock;
 sem_t *log_write;
+sem_t *counter;
+
 
 pid_t hacker_gen;
 pid_t serf_gen;
 
 FILE *output_log;
+int *shared_counter;
+int shared_counter_id;
 
+void init_resources();
 
-int init();
-
-void destroy();
+void destroy_resources();
 
 #endif

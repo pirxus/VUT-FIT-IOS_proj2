@@ -6,11 +6,13 @@
  *	@note	IOS 2019 - second assignment - River Crossing Problem
  */
 
+#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
 #include "generate.h"
 #include "resources.h"
 #include "process.h"
@@ -36,6 +38,8 @@ void gen_hacker(params_t parameters) {
     for (unsigned i = 1; i <= parameters.P; i++) {
         wait(NULL);
     }
+    
+    exit(0);
 }
 
 void gen_serf(params_t parameters) {

@@ -7,6 +7,9 @@
  *	@note   IOS 2019 - second assignment - River Crossing Problem
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "arguments.h"
 
 int parse_arguments(struct process_parameters *parameters, int argc, char **argv) {

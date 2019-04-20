@@ -10,7 +10,6 @@
 #define GENERATE_HEADER
 
 #include "arguments.h"
-#include <time.h>
 
 /**
  * @brief Generates hacker processes

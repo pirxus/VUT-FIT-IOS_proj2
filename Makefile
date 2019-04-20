@@ -7,7 +7,7 @@
 #  NOTE: 
 #-------------------------------------------------
 
-CFLAGS=-std=gnu99 -Wall -Wextra -pedantic -g
+CFLAGS=-std=gnu99 -Wall -Wextra -pedantic -g -pthread
 
 all: proj2
 
