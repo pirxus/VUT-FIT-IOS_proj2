@@ -28,11 +28,11 @@ void init_resources(params_t params) {
 
     setbuf(output_log, NULL);
 
-    if ((counter_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
+    if ((message_counter_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
         // handle error
     }
 
-    if ((counter = shmat(counter_id, NULL, 0)) == NULL) {
+    if ((message_counter = shmat(message_counter_id, NULL, 0)) == NULL) {
         // handle error
     }
 
@@ -68,10 +68,10 @@ void init_resources(params_t params) {
         // handle error
     }
 
-    *counter = 0;
+    *message_counter = 0;
     *hacker_count = 0;
-    *hacker_board = 0;
     *serf_count = 0;
+    *hacker_board = 0;
     *serf_board = 0;
 
 
@@ -81,7 +81,11 @@ void init_resources(params_t params) {
         // handle error
     }
 
-    if ((barrier = sem_open(semBARRIER, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
+    if ((try_to_board = sem_open(semTRY_TO_BOARD, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
+        // handle error
+    }
+
+    if ((board_limit = sem_open(semBOARD_LIMIT, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
         // handle error
     }
 
@@ -101,24 +105,24 @@ void init_resources(params_t params) {
         // handle error
     }
 
-    if ((counter_sem = sem_open(semCOUNTER, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
+    if ((counter = sem_open(semCOUNTER, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
         // handle error
     }
 
     if ((captain_exit = sem_open(semCAPTAIN, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
         // handle error
     }
-
-
-
 }
 
 void destroy_resources() {
     sem_close(mutex);
     sem_unlink(semMUTEX);
 
-    sem_close(barrier);
-    sem_unlink(semBARRIER);
+    sem_close(try_to_board);
+    sem_unlink(semTRY_TO_BOARD);
+
+    sem_close(board_limit);
+    sem_unlink(semBOARD_LIMIT);
 
     sem_close(hacker_queue);
     sem_unlink(semHACKER);
@@ -132,18 +136,17 @@ void destroy_resources() {
     sem_close(log_write);
     sem_unlink(semLOG_WRITE);
 
-    sem_close(counter_sem);
+    sem_close(counter);
     sem_unlink(semCOUNTER);
 
     sem_close(captain_exit);
     sem_unlink(semCAPTAIN);
 
-    shmctl(counter_id, IPC_RMID, NULL);
+    shmctl(message_counter_id, IPC_RMID, NULL);
     shmctl(hacker_count_id, IPC_RMID, NULL);
     shmctl(serf_count_id, IPC_RMID, NULL);
     shmctl(hacker_board_id, IPC_RMID, NULL);
     shmctl(serf_board_id, IPC_RMID, NULL);
 
     fclose(output_log);
-
 }

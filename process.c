@@ -21,13 +21,17 @@ void hacker_process(params_t parameters, unsigned id) {
     print_status(HACK, "starts", false, false, id);
 
     /* Passenger tries to enter the dock */
+    sem_wait(mutex);
     while (sem_trywait(dock) == -1) {
         print_status(HACK, "leaves queue", true, false, id);
+        sem_post(mutex);
 
         /* Passenger leaves the queue for some time and then comes back */
         usleep(1000 * ((rand() % (parameters.W - 19) + 20)));
         print_status(HACK, "is back", false, false, id);
+        sem_wait(mutex);
     }
+    sem_post(mutex);
 
     /* The process can now wait in the docks... */
     print_status(HACK, "waits", true, true, id);
@@ -35,10 +39,10 @@ void hacker_process(params_t parameters, unsigned id) {
     /* Check for valid passenger combinations in order to obtain the captain role,
      * otherwise, get in the boarding queue */
     bool captain = false;
-    sem_wait(mutex);
+    sem_wait(try_to_board);
+    sem_wait(counter);
     *hacker_board += 1;
 
-    sem_wait(counter_sem);
     if (*hacker_board == 4) {
 
         sem_post(hacker_queue);
@@ -64,30 +68,18 @@ void hacker_process(params_t parameters, unsigned id) {
         captain = true;
 
     } else {
-        sem_post(mutex);
+        sem_post(try_to_board);
+        sem_post(counter);
     }
-
-    sem_post(counter_sem);
 
     sem_wait(hacker_queue);
 
 
-    if (!captain) {
-        sem_wait(barrier);
-        print_status(HACK, "member exits", true, false, id);
-        sem_post(captain_exit);
+    if (captain)
+        row(HACK, parameters, id);
+    else
+        board(HACK, id);
 
-    } else {
-        print_status(HACK, "boards", true, false, id);
-        row();
-
-        /* Captain exits */
-        print_status(HACK, "captain exits", true, false, id);
-
-        sem_post(mutex);
-    }
-
-    sem_post(dock);
     exit(0);
 }
 
@@ -96,13 +88,17 @@ void serf_process(params_t parameters, unsigned id) {
     print_status(SERF, "starts", false, false, id);
 
     /* Passenger tries to enter the dock */
+    sem_wait(mutex);
     while (sem_trywait(dock) == -1) {
         print_status(SERF, "leaves queue", true, false, id);
+        sem_post(mutex);
 
         /* Passenger leaves the queue for some time and then comes back */
         usleep(1000 * ((rand() % (parameters.W - 19) + 20)));
         print_status(SERF, "is back", false, false, id);
+        sem_wait(mutex);
     }
+    sem_post(mutex);
 
     /* The process can now wait in the docks... */
     print_status(SERF, "waits", true, true, id);
@@ -110,10 +106,10 @@ void serf_process(params_t parameters, unsigned id) {
     /* Check for valid passenger combinations in order to obtain the captain role,
      * otherwise, get in the boarding queue */
     bool captain = false;
-    sem_wait(mutex);
+    sem_wait(try_to_board);
+    sem_wait(counter);
     *serf_board += 1;
 
-    sem_wait(counter_sem);
     if (*serf_board == 4) {
 
         sem_post(serf_queue);
@@ -139,41 +135,53 @@ void serf_process(params_t parameters, unsigned id) {
         captain = true;
 
     } else {
-        sem_post(mutex);
+        sem_post(try_to_board);
+        sem_post(counter);
     }
-    sem_post(counter_sem);
 
     sem_wait(serf_queue);
 
-    if (!captain) {
-        sem_wait(barrier);
-
-        print_status(SERF, "member exits", true, false, id);
-
-        sem_post(captain_exit);
-
-    } else {
-        print_status(SERF, "boards", true, false, id);
-        row();
-
-        /* Captain exits */
-        print_status(SERF, "captain exits", true, false, id);
-        sem_post(mutex);
-    }
+    if (captain)
+        row(SERF, parameters, id);
+    else
+        board(SERF, id);
 
     sem_post(dock);
     exit(0);
 }
 
-void row(params_t parameters) {
+void row(const char *name, params_t parameters, unsigned id) {
+
+    sem_wait(mutex);
+
+    sem_post(dock);
+    sem_post(dock);
+    sem_post(dock);
+    sem_post(dock);
+
+    print_status(name, "boards", true, false, id);
+
+    sem_post(counter);
+    sem_post(mutex);
+
     usleep(1000 * (rand() % (parameters.R + 1)));
-    sem_post(barrier);
-    sem_post(barrier);
-    sem_post(barrier);
+
+    sem_post(board_limit);
+    sem_post(board_limit);
+    sem_post(board_limit);
 
     sem_wait(captain_exit);
     sem_wait(captain_exit);
     sem_wait(captain_exit);
+
+    print_status(name, "captain exits", true, false, id);
+    sem_post(try_to_board);
+}
+
+void board(const char *name, unsigned id) {
+    sem_wait(board_limit);
+    print_status(HACK, "member exits", true, false, id);
+    sem_post(captain_exit);
 }
 
 void print_status(const char *name, const char *message,
@@ -181,7 +189,7 @@ void print_status(const char *name, const char *message,
     sem_wait(log_write);
 
     if (pass_count) {
-        sem_wait(counter_sem);
+        sem_wait(counter);
 
         if (inc) {
             if (!strcmp(name, HACK))
@@ -191,12 +199,12 @@ void print_status(const char *name, const char *message,
         }
 
         fprintf(output_log, "%d      : %s %d      : %s     : %d   : %d\n",
-                ++(*counter), name, id, message, *hacker_count, *serf_count);
-        sem_post(counter_sem);
+                ++(*message_counter), name, id, message, *hacker_count, *serf_count);
+        sem_post(counter);
 
     } else {
         fprintf(output_log, "%d      : %s %d      : %s \n",
-                ++(*counter), name, id, message);
+                ++(*message_counter), name, id, message);
     }
 
     sem_post(log_write);

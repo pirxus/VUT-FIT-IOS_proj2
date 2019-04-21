@@ -10,15 +10,19 @@
 #define PROCESS_HEADER
 
 #include <stdbool.h>
+
 #include "arguments.h"
+
+#define HACK "HACK"
+#define SERF "SERF"
 
 void hacker_process(params_t parameters, unsigned id);
 
 void serf_process(params_t parameters, unsigned id);
 
-void board(int process, unsigned id);
+void row(const char *name, params_t parameters, unsigned id);
 
-void row();
+void board(const char *name, unsigned id);
 
 void print_status(const char *name, const char *message,
         bool pass_count, bool inc, unsigned id);

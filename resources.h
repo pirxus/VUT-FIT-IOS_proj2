@@ -15,7 +15,8 @@
 #include "arguments.h"
 
 #define semMUTEX "/ios-xsedla1h-mutex"
-#define semBARRIER "/ios-xsedla1h-barrier"
+#define semTRY_TO_BOARD "/ios-xsedla1h-try_to_board"
+#define semBOARD_LIMIT "/ios-xsedla1h-board_limit"
 #define semHACKER "/ios-xsedla1h-hacker"
 #define semSERF "/ios-xsedla1h-serf"
 #define semDOCK "/ios-xsedla1h-dock"
@@ -25,26 +26,20 @@
 
 #define LOG_FILE "proj2.out"
 
-#define HACK "HACK"
-#define SERF "SERF"
-
 sem_t *mutex;
-sem_t *barrier;
+sem_t *try_to_board;
+sem_t *board_limit;
 sem_t *hacker_queue;
 sem_t *serf_queue;
 sem_t *dock;
 sem_t *log_write;
-sem_t *counter_sem;
+sem_t *counter;
 sem_t *captain_exit;
-
-
-pid_t hacker_gen;
-pid_t serf_gen;
 
 FILE *output_log;
 
-int *counter;
-int counter_id;
+int *message_counter;
+int message_counter_id;
 
 int *hacker_count;
 int hacker_count_id;
