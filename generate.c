@@ -21,7 +21,7 @@ void gen_hacker(params_t parameters) {
     for (unsigned i = 1; i <= parameters.P; i++) {
 
         if (parameters.H != 0)
-            usleep(rand() % ((1000 * parameters.H) + 1));
+            usleep(1000 * (rand() % (parameters.H + 1)));
 
         pid_t pid = fork();
 
@@ -51,7 +51,7 @@ void gen_serf(params_t parameters) {
     for (unsigned i = 1; i <= parameters.P; i++) {
 
         if (parameters.H != 0)
-            usleep(rand() % ((1000 * parameters.S) + 1));
+            usleep(1000 * (rand() % (parameters.S + 1)));
 
         pid_t pid = fork();
 

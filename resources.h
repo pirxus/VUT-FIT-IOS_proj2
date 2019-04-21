@@ -25,8 +25,8 @@
 
 #define LOG_FILE "proj2.out"
 
-#define HACKER 0
-#define SERF 1
+#define HACK "HACK"
+#define SERF "SERF"
 
 sem_t *mutex;
 sem_t *barrier;
@@ -55,8 +55,6 @@ int *hacker_board;
 int hacker_board_id;
 int *serf_board;
 int serf_board_id;
-
-static const char *passenger[] = {"HACK", "SERF"};
 
 void init_resources(params_t params);
 
