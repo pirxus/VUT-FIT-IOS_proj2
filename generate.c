@@ -7,7 +7,6 @@
  */
 
 #include <stdlib.h>
-#include <time.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/types.h>
@@ -22,7 +21,7 @@ void gen_hacker(params_t parameters) {
     for (unsigned i = 1; i <= parameters.P; i++) {
 
         if (parameters.H != 0)
-            usleep(rand() % (1000 * parameters.H));
+            usleep(rand() % ((1000 * parameters.H) + 1));
 
         pid_t pid = fork();
 
@@ -30,18 +29,49 @@ void gen_hacker(params_t parameters) {
             hacker_process(parameters, i);
 
         } else if (pid == -1) {
-            //destroy();
+            fprintf(stderr, "Error: could not fork hacker process\n");
+
+            /* Wait for all the children to end */
+            for (unsigned j = 0; j < i; j++)
+                wait(NULL);
+
             exit(1);
         }
     }
     
-    for (unsigned i = 1; i <= parameters.P; i++) {
+    /* Wait for all the children to end */
+    for (unsigned i = 0; i < parameters.P; i++)
         wait(NULL);
-    }
     
     exit(0);
 }
 
 void gen_serf(params_t parameters) {
+    /* Generate serf processes */
+    for (unsigned i = 1; i <= parameters.P; i++) {
 
+        if (parameters.H != 0)
+            usleep(rand() % ((1000 * parameters.S) + 1));
+
+        pid_t pid = fork();
+
+        if (pid == 0) {
+            serf_process(parameters, i);
+
+        } else if (pid == -1) {
+            fprintf(stderr, "Error: could not fork serf process\n");
+
+            /* Wait for all the children to end */
+            for (unsigned j = 0; j < i; j++)
+                wait(NULL);
+
+            exit(1);
+        }
+    }
+
+    /* Wait for all the children to end */
+    for (unsigned i = 0; i < parameters.P; i++)
+        wait(NULL);
+    
+    exit(0);
 }

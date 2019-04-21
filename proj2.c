@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
         exit(1);
 
     /* Init all the necessary resources */
-    init_resources();
+    init_resources(parameters);
 
 
     /* Fork the hacker generator */
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
             exit(2);
 
         } else if (pid == 0) {
-            //gen_serf(parameters);
+            gen_serf(parameters);
 
         } else {
             serf_gen = pid;

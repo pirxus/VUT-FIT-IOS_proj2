@@ -11,9 +11,6 @@
 
 #include "arguments.h"
 
-#define HACKER 0
-#define SERF 1
-
 void hacker_process(params_t parameters, unsigned id);
 
 void serf_process(params_t parameters, unsigned id);
