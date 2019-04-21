@@ -31,10 +31,10 @@ void hacker_process(params_t parameters, unsigned id) {
         print_status(HACK, "is back", false, false, id);
         sem_wait(mutex);
     }
-    sem_post(mutex);
 
     /* The process can now wait in the docks... */
     print_status(HACK, "waits", true, true, id);
+    sem_post(mutex);
 
     /* Check for valid passenger combinations in order to obtain the captain role,
      * otherwise, get in the boarding queue */
@@ -69,11 +69,10 @@ void hacker_process(params_t parameters, unsigned id) {
 
     } else {
         sem_post(try_to_board);
-        sem_post(counter);
     }
+    sem_post(counter);
 
     sem_wait(hacker_queue);
-
 
     if (captain)
         row(HACK, parameters, id);
@@ -98,10 +97,10 @@ void serf_process(params_t parameters, unsigned id) {
         print_status(SERF, "is back", false, false, id);
         sem_wait(mutex);
     }
-    sem_post(mutex);
 
     /* The process can now wait in the docks... */
     print_status(SERF, "waits", true, true, id);
+    sem_post(mutex);
 
     /* Check for valid passenger combinations in order to obtain the captain role,
      * otherwise, get in the boarding queue */
@@ -136,8 +135,8 @@ void serf_process(params_t parameters, unsigned id) {
 
     } else {
         sem_post(try_to_board);
-        sem_post(counter);
     }
+    sem_post(counter);
 
     sem_wait(serf_queue);
 
@@ -146,7 +145,6 @@ void serf_process(params_t parameters, unsigned id) {
     else
         board(SERF, id);
 
-    sem_post(dock);
     exit(0);
 }
 
@@ -161,7 +159,6 @@ void row(const char *name, params_t parameters, unsigned id) {
 
     print_status(name, "boards", true, false, id);
 
-    sem_post(counter);
     sem_post(mutex);
 
     usleep(1000 * (rand() % (parameters.R + 1)));
@@ -198,12 +195,12 @@ void print_status(const char *name, const char *message,
                 *serf_count += 1;
         }
 
-        fprintf(output_log, "%d      : %s %d      : %s     : %d   : %d\n",
+        fprintf(output_log, "%-8d: %s %-8d: %-20s: %-8d: %d\n",
                 ++(*message_counter), name, id, message, *hacker_count, *serf_count);
         sem_post(counter);
 
     } else {
-        fprintf(output_log, "%d      : %s %d      : %s \n",
+        fprintf(output_log, "%-8d: %s %-8d: %s\n",
                 ++(*message_counter), name, id, message);
     }
 
