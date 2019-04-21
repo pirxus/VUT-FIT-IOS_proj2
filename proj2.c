@@ -2,26 +2,20 @@
  *	@file	proj2.c
  *	@author	Simon Sedlacek, xsedla1h
  *	@date	5.4.2019
- *	@brief  
+ *	@brief  The main source file for this project
  *	@note	IOS 2019 - second assignment - River Crossing Problem
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <error.h>
-#include <errno.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <signal.h>
-#include <time.h>
-#include <semaphore.h>
 
 #include "resources.h"
 #include "generate.h"
 #include "arguments.h"
-
 
 
 int main(int argc, char **argv) {
@@ -37,7 +31,7 @@ int main(int argc, char **argv) {
     /* Fork the hacker generator */
     pid_t hacker, serf;
     if ((hacker = fork()) == -1) {
-        fprintf(stderr, "Error: could not fork hacker_gen\n");
+        perror("gen_hacker fork");
         destroy_resources();
         exit(2);
 
@@ -48,7 +42,7 @@ int main(int argc, char **argv) {
 
         /* Fork the serf generator */
         if ((serf = fork()) == -1) {
-            fprintf(stderr, "Error: could not fork serf_gen\n");
+            perror("gen_serf fork");
             destroy_resources();
             exit(2);
 

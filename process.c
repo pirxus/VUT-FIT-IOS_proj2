@@ -2,7 +2,8 @@
  *	@file	process.c
  *	@author	Simon Sedlacek, xsedla1h
  *	@date	18.4.2019
- *	@brief  
+ *	@brief  This module contains all the funcions representing the hackers
+ *	and serfs themselfs
  *	@note	IOS 2019 - second assignment - River Crossing Problem
  */
 
@@ -42,10 +43,11 @@ void hacker_process(params_t parameters, unsigned id) {
     sem_wait(try_to_board);
     sem_wait(mutex);
     sem_wait(counter);
-    *hacker_board += 1;
 
+    *hacker_board += 1;
     if (*hacker_board == 4) {
 
+        /* Found four hackers! */
         sem_post(hacker_queue);
         sem_post(hacker_queue);
         sem_post(hacker_queue);
@@ -57,6 +59,7 @@ void hacker_process(params_t parameters, unsigned id) {
 
     } else if (*hacker_board == 2 && *serf_board >= 2) {
 
+        /* Found two serfs and two hackers! */
         sem_post(hacker_queue);
         sem_post(hacker_queue);
         sem_post(serf_queue);
@@ -69,12 +72,14 @@ void hacker_process(params_t parameters, unsigned id) {
         captain = true;
 
     } else {
+
+        /* Non captain releases the resources */
         sem_post(try_to_board);
         sem_post(mutex);
     }
 
     sem_post(counter);
-
+    /* Passenger waits to be boarded... */
     sem_wait(hacker_queue);
 
     if (captain)
@@ -111,10 +116,11 @@ void serf_process(params_t parameters, unsigned id) {
     sem_wait(try_to_board);
     sem_wait(mutex);
     sem_wait(counter);
-    *serf_board += 1;
 
+    *serf_board += 1;
     if (*serf_board == 4) {
 
+        /* Found four hackers! */
         sem_post(serf_queue);
         sem_post(serf_queue);
         sem_post(serf_queue);
@@ -126,6 +132,7 @@ void serf_process(params_t parameters, unsigned id) {
 
     } else if (*serf_board == 2 && *hacker_board >= 2) {
 
+        /* Found two serfs and two hackers! */
         sem_post(serf_queue);
         sem_post(serf_queue);
         sem_post(hacker_queue);
@@ -138,12 +145,14 @@ void serf_process(params_t parameters, unsigned id) {
         captain = true;
 
     } else {
+
+        /* Non captain releases the resources */
         sem_post(mutex);
         sem_post(try_to_board);
     }
 
     sem_post(counter);
-
+    /* Passenger waits to be boarded... */
     sem_wait(serf_queue);
 
     if (captain)

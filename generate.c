@@ -2,7 +2,7 @@
  *	@file	generate.c
  *	@author	Simon Sedlacek, xsedla1h
  *	@date	18.4.2019
- *	@brief  
+ *	@brief  Functions in this module generate the hacker and serf processes
  *	@note	IOS 2019 - second assignment - River Crossing Problem
  */
 
@@ -17,25 +17,27 @@
 #include "process.h"
 
 void gen_hacker(params_t parameters) {
+    pid_t pid;
+
     /* Generate hacker processes */
     for (unsigned i = 1; i <= parameters.P; i++) {
 
         if (parameters.H != 0)
             usleep(1000 * (rand() % (parameters.H + 1)));
 
-        pid_t pid = fork();
+        pid = fork();
 
         if (pid == 0) {
             hacker_process(parameters, i);
 
         } else if (pid == -1) {
-            fprintf(stderr, "Error: could not fork hacker process\n");
+            perror("fork_hacker");
 
             /* Wait for all the children to end */
             for (unsigned j = 0; j < i; j++)
                 wait(NULL);
 
-            exit(1);
+            exit(2);
         }
     }
     
@@ -47,25 +49,25 @@ void gen_hacker(params_t parameters) {
 }
 
 void gen_serf(params_t parameters) {
+    pid_t pid;
     /* Generate serf processes */
     for (unsigned i = 1; i <= parameters.P; i++) {
 
         if (parameters.H != 0)
             usleep(1000 * (rand() % (parameters.S + 1)));
 
-        pid_t pid = fork();
+        pid = fork();
 
         if (pid == 0) {
             serf_process(parameters, i);
 
         } else if (pid == -1) {
-            fprintf(stderr, "Error: could not fork serf process\n");
+            perror("fork_serf");
 
             /* Wait for all the children to end */
             for (unsigned j = 0; j < i; j++)
                 wait(NULL);
-
-            exit(1);
+            exit(2);
         }
     }
 

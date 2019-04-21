@@ -11,14 +11,14 @@
 #define ARGUMENTS_HEADER
 
 /**
- * @brief This structure represents the program parameters
+ * @brief This structure stores the loaded program arguments
  *
- * @var P
- * @var H
- * @var S
- * @var R
- * @var W
- * @var C
+ * @var P Number of processes in each category which is to be generated
+ * @var H The maximum amount of time in ms after which a new hacker is generated
+ * @var S The maximum amount of time in ms after which a new serf is generated
+ * @var R The maximum amount of time in ms for which the journey can last
+ * @var W If the dock is full, the process waits <20, W> ms before returning
+ * @var C The capacity of the dock
  */
 typedef struct process_parameters {
     int P;
@@ -31,6 +31,10 @@ typedef struct process_parameters {
 
 /**
  * @brief Parses program arguments and stores their values
+ *
+ * @param parameters A structure for storing the loaded information
+ * @param argc The number of program arguments
+ * @param argv Program arguments
  */
 int parse_arguments(struct process_parameters *parameters, int argc, char **argv);
 

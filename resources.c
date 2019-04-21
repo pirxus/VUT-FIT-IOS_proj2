@@ -2,7 +2,8 @@
  *	@file	resources.c
  *	@author	Simon Sedlacek, xsedla1h
  *	@date	18.4.2019
- *	@brief  
+ *	@brief  This module contains functions that initialize the necessary
+ *	resources for the program as well as release them
  *	@note	IOS 2019 - second assignment - River Crossing Problem
  */
 
@@ -20,54 +21,40 @@ void init_resources(params_t params) {
 
     srand(time(NULL));
 
+    /* Open the log file */
     output_log = fopen(LOG_FILE, "w");
     if (!output_log) {
         fprintf(stderr, "Error: could not open log file\n");
         exit(1);
     }
 
+    /* Prevent output buffering */
     setbuf(output_log, NULL);
 
-    if ((message_counter_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
-        // handle error
+    /* Shared memory initialization */
+    if (((message_counter_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) ||
+        ((hacker_count_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) ||
+        ((serf_count_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) ||
+        ((hacker_board_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) ||
+        ((serf_board_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1)) {
+
+        perror("failed to obtain shared memory");
+        destroy_resources();
+        exit(1);
     }
 
-    if ((message_counter = shmat(message_counter_id, NULL, 0)) == NULL) {
-        // handle error
+    if (((message_counter = shmat(message_counter_id, NULL, 0)) == NULL) || 
+        ((hacker_count = shmat(hacker_count_id, NULL, 0)) == NULL) ||
+        ((serf_count = shmat(serf_count_id, NULL, 0)) == NULL) || 
+        ((hacker_board = shmat(hacker_board_id, NULL, 0)) == NULL) ||
+        ((serf_board = shmat(serf_board_id, NULL, 0)) == NULL)) {
+
+        perror("failed to init shared memory");
+        destroy_resources();
+        exit(1);
     }
 
-    if ((hacker_count_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
-        // handle error
-    }
-
-    if ((hacker_count = shmat(hacker_count_id, NULL, 0)) == NULL) {
-        // handle error
-    }
-
-    if ((serf_count_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
-        // handle error
-    }
-
-    if ((serf_count = shmat(serf_count_id, NULL, 0)) == NULL) {
-        // handle error
-    }
-
-    if ((hacker_board_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
-        // handle error
-    }
-
-    if ((hacker_board = shmat(hacker_board_id, NULL, 0)) == NULL) {
-        // handle error
-    }
-
-    if ((serf_board_id = shmget(IPC_PRIVATE, sizeof(int), IPC_CREAT | 0666)) == -1) {
-        // handle error
-    }
-
-    if ((serf_board = shmat(serf_board_id, NULL, 0)) == NULL) {
-        // handle error
-    }
-
+    /* Initialize the shared variables */
     *message_counter = 0;
     *hacker_count = 0;
     *serf_count = 0;
@@ -75,71 +62,42 @@ void init_resources(params_t params) {
     *serf_board = 0;
 
 
-    /* Semaphores */
+    /* Semaphore initialization */
+    if (((mutex = sem_open(semMUTEX, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) ||
+        ((try_to_board = sem_open(semTRY_TO_BOARD, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) ||
+        ((board_limit = sem_open(semBOARD_LIMIT, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) ||
+        ((hacker_queue = sem_open(semHACKER, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) ||
+        ((serf_queue = sem_open(semSERF, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) ||
+        ((dock = sem_open(semDOCK, O_CREAT | O_EXCL, 0666, params.C)) == SEM_FAILED) ||
+        ((log_write = sem_open(semLOG_WRITE, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) ||
+        ((counter = sem_open(semCOUNTER, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) ||
+        ((captain_exit = sem_open(semCAPTAIN, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED)) {
 
-    if ((mutex = sem_open(semMUTEX, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((try_to_board = sem_open(semTRY_TO_BOARD, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((board_limit = sem_open(semBOARD_LIMIT, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((hacker_queue = sem_open(semHACKER, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((serf_queue = sem_open(semSERF, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((dock = sem_open(semDOCK, O_CREAT | O_EXCL, 0666, params.C)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((log_write = sem_open(semLOG_WRITE, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((counter = sem_open(semCOUNTER, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) {
-        // handle error
-    }
-
-    if ((captain_exit = sem_open(semCAPTAIN, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) {
-        // handle error
+        perror("failed to open semaphore");
+        destroy_resources();
+        exit(1);
     }
 }
 
 void destroy_resources() {
     sem_close(mutex);
-    sem_unlink(semMUTEX);
-
     sem_close(try_to_board);
-    sem_unlink(semTRY_TO_BOARD);
-
     sem_close(board_limit);
-    sem_unlink(semBOARD_LIMIT);
-
     sem_close(hacker_queue);
-    sem_unlink(semHACKER);
-
     sem_close(serf_queue);
-    sem_unlink(semSERF);
-
     sem_close(dock);
-    sem_unlink(semDOCK);
-
     sem_close(log_write);
-    sem_unlink(semLOG_WRITE);
-
     sem_close(counter);
-    sem_unlink(semCOUNTER);
-
     sem_close(captain_exit);
+
+    sem_unlink(semMUTEX);
+    sem_unlink(semTRY_TO_BOARD);
+    sem_unlink(semBOARD_LIMIT);
+    sem_unlink(semHACKER);
+    sem_unlink(semSERF);
+    sem_unlink(semDOCK);
+    sem_unlink(semLOG_WRITE);
+    sem_unlink(semCOUNTER);
     sem_unlink(semCAPTAIN);
 
     shmctl(message_counter_id, IPC_RMID, NULL);
