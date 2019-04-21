@@ -1,6 +1,7 @@
 # Project specific files
 proj2
 LittleBookOfSemaphores.pdf
+vut-ios-proj2-validator/
 
 # Prerequisites
 *.d

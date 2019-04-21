@@ -40,6 +40,7 @@ void hacker_process(params_t parameters, unsigned id) {
      * otherwise, get in the boarding queue */
     bool captain = false;
     sem_wait(try_to_board);
+    sem_wait(mutex);
     sem_wait(counter);
     *hacker_board += 1;
 
@@ -69,7 +70,9 @@ void hacker_process(params_t parameters, unsigned id) {
 
     } else {
         sem_post(try_to_board);
+        sem_post(mutex);
     }
+
     sem_post(counter);
 
     sem_wait(hacker_queue);
@@ -106,6 +109,7 @@ void serf_process(params_t parameters, unsigned id) {
      * otherwise, get in the boarding queue */
     bool captain = false;
     sem_wait(try_to_board);
+    sem_wait(mutex);
     sem_wait(counter);
     *serf_board += 1;
 
@@ -134,8 +138,10 @@ void serf_process(params_t parameters, unsigned id) {
         captain = true;
 
     } else {
+        sem_post(mutex);
         sem_post(try_to_board);
     }
+
     sem_post(counter);
 
     sem_wait(serf_queue);
@@ -149,24 +155,24 @@ void serf_process(params_t parameters, unsigned id) {
 }
 
 void row(const char *name, params_t parameters, unsigned id) {
-
-    sem_wait(mutex);
-
+    /* The captain frees four spaces in the docks and starts his journey */
     sem_post(dock);
     sem_post(dock);
     sem_post(dock);
     sem_post(dock);
 
     print_status(name, "boards", true, false, id);
-
     sem_post(mutex);
 
+    /* Gendry is still rowing his boat... */
     usleep(1000 * (rand() % (parameters.R + 1)));
 
+    /* Waits for the crew to exit the boat */
     sem_post(board_limit);
     sem_post(board_limit);
     sem_post(board_limit);
 
+    /* Now exits the boat himself */
     sem_wait(captain_exit);
     sem_wait(captain_exit);
     sem_wait(captain_exit);
@@ -176,18 +182,26 @@ void row(const char *name, params_t parameters, unsigned id) {
 }
 
 void board(const char *name, unsigned id) {
+    /* The passenger gets on board, where he waits for
+     * the captain to finish rowing... */
     sem_wait(board_limit);
-    print_status(HACK, "member exits", true, false, id);
+    print_status(name, "member exits", true, false, id);
+
+    /* Lets captain know he's exiting the boat */
     sem_post(captain_exit);
 }
 
 void print_status(const char *name, const char *message,
         bool pass_count, bool inc, unsigned id) {
+
     sem_wait(log_write);
 
+    /* Checks if the message should contain information about current
+     * numbers of passengers waiting in the docks */
     if (pass_count) {
         sem_wait(counter);
 
+        /* Increments either the hacker count or the serf count */
         if (inc) {
             if (!strcmp(name, HACK))
                 *hacker_count += 1;
