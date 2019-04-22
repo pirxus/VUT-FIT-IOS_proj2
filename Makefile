@@ -7,9 +7,13 @@
 #  NOTE: 
 #-------------------------------------------------
 
-CFLAGS=-std=gnu99 -Wall -Wextra -pedantic -g -pthread
+CFLAGS=-std=gnu99 -Wall -Wextra -Werror -pedantic -g -pthread
 
 all: proj2
+
+pack:
+	rm proj2.zip
+	zip proj2.zip *.c *.h Makefile
 
 proj2: proj2.o arguments.o resources.o process.o generate.o
 	gcc $(CFLAGS) $^ -o $@
