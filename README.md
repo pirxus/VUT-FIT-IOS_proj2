@@ -2,3 +2,6 @@
 
 #todo:
 - error: waiting for children
+- atomic boarding
+- merlin
+- Makefile
