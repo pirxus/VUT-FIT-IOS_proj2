@@ -70,7 +70,6 @@ void init_resources(params_t params) {
         ((serf_queue = sem_open(semSERF, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED) ||
         ((dock = sem_open(semDOCK, O_CREAT | O_EXCL, 0666, params.C)) == SEM_FAILED) ||
         ((log_write = sem_open(semLOG_WRITE, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) ||
-        ((counter = sem_open(semCOUNTER, O_CREAT | O_EXCL, 0666, 1)) == SEM_FAILED) ||
         ((captain_exit = sem_open(semCAPTAIN, O_CREAT | O_EXCL, 0666, 0)) == SEM_FAILED)) {
 
         perror("failed to open semaphore");
@@ -87,7 +86,6 @@ void destroy_resources() {
     sem_close(serf_queue);
     sem_close(dock);
     sem_close(log_write);
-    sem_close(counter);
     sem_close(captain_exit);
 
     sem_unlink(semMUTEX);
@@ -97,7 +95,6 @@ void destroy_resources() {
     sem_unlink(semSERF);
     sem_unlink(semDOCK);
     sem_unlink(semLOG_WRITE);
-    sem_unlink(semCOUNTER);
     sem_unlink(semCAPTAIN);
 
     shmctl(message_counter_id, IPC_RMID, NULL);

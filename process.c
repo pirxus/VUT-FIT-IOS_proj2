@@ -42,7 +42,6 @@ void hacker_process(params_t parameters, unsigned id) {
     bool captain = false;
     sem_wait(try_to_board);
     sem_wait(mutex);
-    sem_wait(counter);
 
     *hacker_board += 1;
     if (*hacker_board == 4) {
@@ -78,7 +77,6 @@ void hacker_process(params_t parameters, unsigned id) {
         sem_post(mutex);
     }
 
-    sem_post(counter);
     /* Passenger waits to be boarded... */
     sem_wait(hacker_queue);
 
@@ -115,7 +113,6 @@ void serf_process(params_t parameters, unsigned id) {
     bool captain = false;
     sem_wait(try_to_board);
     sem_wait(mutex);
-    sem_wait(counter);
 
     *serf_board += 1;
     if (*serf_board == 4) {
@@ -151,7 +148,6 @@ void serf_process(params_t parameters, unsigned id) {
         sem_post(try_to_board);
     }
 
-    sem_post(counter);
     /* Passenger waits to be boarded... */
     sem_wait(serf_queue);
 
@@ -208,7 +204,6 @@ void print_status(const char *name, const char *message,
     /* Checks if the message should contain information about current
      * numbers of passengers waiting in the docks */
     if (pass_count) {
-        sem_wait(counter);
 
         /* Increments either the hacker count or the serf count */
         if (inc) {
@@ -220,7 +215,6 @@ void print_status(const char *name, const char *message,
 
         fprintf(output_log, "%-8d: %s %-8d: %-20s: %-8d: %d\n",
                 ++(*message_counter), name, id, message, *hacker_count, *serf_count);
-        sem_post(counter);
 
     } else {
         fprintf(output_log, "%-8d: %s %-8d: %s\n",

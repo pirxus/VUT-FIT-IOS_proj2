@@ -22,7 +22,6 @@
 #define semSERF "/ios-xsedla1h-serf"
 #define semDOCK "/ios-xsedla1h-dock"
 #define semLOG_WRITE "/ios-xsedla1h-log_write"
-#define semCOUNTER "/ios-xsedla1h-counter"
 #define semCAPTAIN "/ios-xsedla1h-captain"
 
 #define LOG_FILE "proj2.out"
@@ -35,7 +34,6 @@ sem_t *hacker_queue;
 sem_t *serf_queue;
 sem_t *dock;
 sem_t *log_write; //mutex
-sem_t *counter; //mutex
 sem_t *captain_exit; //barrier
 
 /**
