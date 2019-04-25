@@ -11,12 +11,15 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 
 #include "generate.h"
 #include "resources.h"
 #include "process.h"
 
+
 void gen_hacker(params_t parameters) {
+    srand(time(NULL));
     pid_t pid;
 
     /* Generate hacker processes */
@@ -49,7 +52,9 @@ void gen_hacker(params_t parameters) {
 }
 
 void gen_serf(params_t parameters) {
+    srand(time(NULL));
     pid_t pid;
+
     /* Generate serf processes */
     for (unsigned i = 1; i <= parameters.P; i++) {
 

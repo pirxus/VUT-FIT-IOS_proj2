@@ -19,8 +19,6 @@
 
 void init_resources(params_t params) {
 
-    srand(time(NULL));
-
     /* Open the log file */
     output_log = fopen(LOG_FILE, "w");
     if (!output_log) {

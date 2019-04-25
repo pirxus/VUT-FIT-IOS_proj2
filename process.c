@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 #include "process.h"
 #include "arguments.h"
@@ -18,6 +19,7 @@
 
 
 void hacker_process(params_t parameters, unsigned id) {
+    srand(time(NULL));
     /* The process has been started */
     print_status(HACK, "starts", false, false, id);
 
@@ -89,6 +91,7 @@ void hacker_process(params_t parameters, unsigned id) {
 }
 
 void serf_process(params_t parameters, unsigned id) {
+    srand(time(NULL));
     /* The process has been started */
     print_status(SERF, "starts", false, false, id);
 
