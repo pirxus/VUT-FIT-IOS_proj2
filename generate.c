@@ -39,7 +39,6 @@ void gen_hacker(params_t parameters) {
             /* Wait for all the children to end */
             for (unsigned j = 0; j < i; j++)
                 wait(NULL);
-
             exit(2);
         }
     }
@@ -58,7 +57,7 @@ void gen_serf(params_t parameters) {
     /* Generate serf processes */
     for (unsigned i = 1; i <= parameters.P; i++) {
 
-        if (parameters.H != 0)
+        if (parameters.S != 0)
             usleep(1000 * (rand() % (parameters.S + 1)));
 
         pid = fork();

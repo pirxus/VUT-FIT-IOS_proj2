@@ -51,8 +51,18 @@ int main(int argc, char **argv) {
         }
     }
 
-    waitpid(hacker, NULL, 0);
-    waitpid(serf, NULL, 0);
+    /* Check if child processes exited normally */
+    int exit_status;
+    for (int i = 0; i < 2; i++) {
+        wait(&exit_status);
+        if (exit_status != 0) {
+            kill(serf, 9);
+            kill(hacker, 9);
+            destroy_resources();
+            exit(2);
+        }
+    }
+
     destroy_resources();
 
     return 0;
